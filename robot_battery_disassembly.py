@@ -67,38 +67,10 @@ for robot in env.robots:
     gripper_dim = robot.gripper["right"].dof if isinstance(robot, Bimanual) else robot.gripper.dof
     n += int(robot.action_dim / (action_dim + gripper_dim))
 
-# print("robot.action_dim: ", robot.action_dim)
-# print("gripper_dim: ", gripper_dim)
-# print("n: ", n)
 # Define neutral value
 neutral = np.zeros(action_dim + gripper_dim)
 gripper_open = [-0.0115, 0.0115]
-# Keep track of done variable to know when to break loop
-count = 0
-# # Loop through controller space
-# while count < num_test_steps:
-#     action = neutral.copy()
-#     for i in range(steps_per_action):
-#         if controller_name in {"IK_POSE", "OSC_POSE"} and count > 2:
-#             # Set this value to be the scaled axis angle vector
-#             vec = np.zeros(3)
-#             vec[count - 3] = test_value
-#             action[3:6] = vec
-#         else:
-#             action[count] = test_value
-#         total_action = np.tile(action, n)
-#         robot.grip_action(gripper = robot.gripper, gripper_action = np.tile(-1,n))
-#         env.step(total_action)
-#         env.render()
-#     for i in range(steps_per_rest):
-#         total_action = np.tile(neutral, n)
-#         robot.grip_action(gripper = robot.gripper, gripper_action = np.tile(1,n))
-#         env.step(total_action)
-#         env.render()
-#     count += 1
 
-# # Shut down this env before starting the next test
-# env.close()
 # z
 # |
 # |___ y  front view (x points outside of screen)
