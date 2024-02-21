@@ -59,18 +59,6 @@ env.reset()
 # env.viewer.set_camera(camera_id=0)
 observables = env._setup_observables()
 
-# To accommodate for multi-arm settings (e.g.: Baxter), we need to make sure to fill any extra action space
-# Get total number of arms being controlled
-n = 0
-gripper_dim = 0
-for robot in env.robots:
-    gripper_dim = robot.gripper["right"].dof if isinstance(robot, Bimanual) else robot.gripper.dof
-    n += int(robot.action_dim / (action_dim + gripper_dim))
-
-# Define neutral value
-neutral = np.zeros(action_dim + gripper_dim)
-gripper_open = [-0.0115, 0.0115]
-
 # z
 # |
 # |___ y  front view (x points outside of screen)
