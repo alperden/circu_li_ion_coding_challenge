@@ -41,21 +41,21 @@ env = robosuite.make(
     gripper_types="Robotiq140Gripper",      # load gripper
     controller_configs=controller_config,   # each arm is controlled using OSC
     env_configuration="single-arm-opposed", # single or two-arm selection
-    has_renderer=True,                      # on-screen rendering
-    render_camera="frontview",              # visualize the "frontview" camera 'frontview', 'birdview', 'agentview', 'sideview', 'robot0_robotview', 'robot0_eye_in_hand'
-    has_offscreen_renderer=True,           # no off-screen rendering
+    has_renderer=False,                      # on-screen rendering
+    # render_camera="frontview",              # visualize the "frontview" camera 'frontview', 'birdview', 'agentview', 'sideview', 'robot0_robotview', 'robot0_eye_in_hand'
+    # has_offscreen_renderer=True,           # no off-screen rendering
     ignore_done=True,
     control_freq=20,                        # 20 hz control for applied actions
     horizon=(steps_per_action + steps_per_rest) * num_test_steps,
-    use_object_obs=True,                   # no observations needed
-    use_camera_obs=False,                   # no observations needed
+    use_object_obs=False,                   # no observations needed
+    use_camera_obs=True,                   # no observations needed
     camera_names="agentview",
     camera_heights=512,
     camera_widths=512,
 )
 
 # reset the environment
-env.reset()
+obs = env.reset()
 # env.viewer.set_camera(camera_id=0)
 observables = env._setup_observables()
 
@@ -63,8 +63,8 @@ observables = env._setup_observables()
 # |
 # |___ y  front view (x points outside of screen)
 differ = env.model.mujoco_arena.table_offset - env._eef_xpos
-action_approach_hor = np.array([differ[0], differ[1], 0, 0, 0, -0.13, -0.2])
-action_approach_ver = np.array([0, 0, differ[2], 0, 0, 0, 0])
+action_approach_hor = np.array([differ[0], differ[1], 0, 0, 0, -0.12, -0.2])
+action_approach_ver = np.array([0, 0, differ[2]+0.01, 0, 0, 0, 0])
 # action_approach = np.array([0.05, 0, -0.1, 0, 0, -0.15, 0])
 action_rest     = np.array([0, 0, 0, 0, 0, 0, 0.2])
 action_pickup   = np.array([0, 0, 0.1, 0, 0, 0, 0])
@@ -82,11 +82,12 @@ for i in range(no_actions):
         # print(observables["gripper_to_cube_pos"].obs)
         # print(env._eef_xpos)
         obs, reward, done, info = env.step(total_action[:,i])
-        env.render()
-        # frame = obs["agentview" + "_image"]
-        # writer.append_data(frame)
+        # env.render()
+        frame = obs["agentview" + "_image"]
+        writer.append_data(frame)
+        print("Saving frame #{}".format(j))
 env.close()
-# writer.close()
+writer.close()
 # while count < num_test_steps:
 #     for i in range(steps_per_action):
 #         # if controller_name in {"IK_POSE", "OSC_POSE"} and count > 2:
