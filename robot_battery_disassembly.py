@@ -17,6 +17,7 @@ if __name__ == "__main__":
     print("Coding Challenge: Simulating Autonomous Battery Disassembly")
 
     parser = argparse.ArgumentParser()
+    parser.add_argument("--camera", type=str, default="agentview", help="Name of camera to render")
     parser.add_argument("--video_path", type=str, default="video.mp4")
     args = parser.parse_args()
 
@@ -41,7 +42,7 @@ if __name__ == "__main__":
             # horizon=(steps_per_action + steps_per_rest) * num_test_steps,
             use_object_obs=False,                   # no observations needed
             use_camera_obs=True,                   # no observations needed
-            camera_names="agentview",
+            camera_names=args.camera,
             camera_heights=512,
             camera_widths=512,
         )
@@ -77,8 +78,7 @@ if __name__ == "__main__":
                 # print(observables["gripper_to_cube_pos"].obs)
                 # print(env._eef_xpos)
                 obs, reward, done, info = env.step(total_action[:,i])
-                # env.render()
-                frame = obs["agentview" + "_image"]
+                frame = obs[args.camera + "_image"]
                 writer.append_data(frame)
                 print("Saving frame #{}".format(j))
         env.close()
@@ -112,7 +112,6 @@ if __name__ == "__main__":
         differ = env.model.mujoco_arena.table_offset - env._eef_xpos
         action_approach_hor = np.array([differ[0], differ[1], 0, 0, 0, -0.12, -0.2])
         action_approach_ver = np.array([0, 0, differ[2]+0.01, 0, 0, 0, 0])
-        # action_approach = np.array([0.05, 0, -0.1, 0, 0, -0.15, 0])
         action_rest     = np.array([0, 0, 0, 0, 0, 0, 0.2])
         action_pickup   = np.array([0, 0, 0.1, 0, 0, 0, 0])
 
@@ -122,6 +121,7 @@ if __name__ == "__main__":
         # Loop through controller space
         no_actions = total_action.shape[1]
         print(env._eef_xpos)
+        print(env._eef_xquat)
         print(env.model.mujoco_arena.table_offset)
 
         for i in range(no_actions):
