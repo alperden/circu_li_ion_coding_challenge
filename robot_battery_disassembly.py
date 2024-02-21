@@ -98,11 +98,18 @@ if __name__ == "__main__":
             ignore_done=True,
             control_freq=20,                        # 20 hz control for applied actions
             use_object_obs=True,                    # no observations needed
-            use_camera_obs=True,                    # no observations needed
+            use_camera_obs=False,                    # no observations needed
         )
         
         # reset the environment
         obs = env.reset()
+        cube_pos = obs["cube_pos"]
+        cube_quat = obs["cube_quat"]
+        gripper_to_cube_pos = obs["gripper_to_cube_pos"]
+        print("cube_pos:", obs["cube_pos"])
+        print("cube_quat:", obs["cube_quat"])
+        print("gripper_to_cube_pos:", obs["gripper_to_cube_pos"])
+
         # env.viewer.set_camera(camera_id=0)
         observables = env._setup_observables()
         
@@ -117,7 +124,7 @@ if __name__ == "__main__":
 
         # actions: approach, gripper open -> rest, gripper close -> pick up, gripper close
         total_action = np.concatenate((action_approach_hor.reshape(7,1), action_approach_ver.reshape(7,1), action_rest.reshape(7,1), action_pickup.reshape(7,1)),axis=1)
-        print("total_action: ", total_action)
+        print("total_action:\n ", total_action)
         # Loop through controller space
         no_actions = total_action.shape[1]
         print(env._eef_xpos)
@@ -130,5 +137,6 @@ if __name__ == "__main__":
                 # print(observables["gripper_to_cube_pos"].obs)
                 # print(env._eef_xpos)
                 obs, reward, done, info = env.step(total_action[:,i])
+                # print(obs["cube_pos"])
                 env.render()
         env.close()
